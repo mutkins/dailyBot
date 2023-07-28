@@ -1,6 +1,6 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from handlers.TrelloCardFSM import TrelloCardFSM
 import db.database
 import keyboards
 from handlers import common
@@ -12,13 +12,6 @@ from create_bot import dp
 logging.basicConfig(filename="main.log", level=logging.INFO, filemode="w",
                     format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("main")
-
-
-class TrelloCardFSM(StatesGroup):
-    waiting_card_title = State()
-    save_or_add_props = State()
-    waiting_card_due = State()
-    waiting_card_desc = State()
 
 
 async def ask_card_title(message: types.Message, state: FSMContext):

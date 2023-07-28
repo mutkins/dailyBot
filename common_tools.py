@@ -28,3 +28,27 @@ def get_year(iterator=0):
 
 def date_iterator(iterator=0):
     return datetime.now() + relativedelta(months=iterator)
+
+
+def get_hf_date_diff(date):
+    date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    diff = get_days_diff(date1=date)
+    hf_date = get_count_days_name(diff)
+    return hf_date
+
+
+def get_days_diff(date1, date2=datetime.now()):
+    return (date1 - date2).days
+
+
+def get_count_days_name(count):
+    match count:
+        case 0:
+            name = 'Сегодня'
+        case 1:
+            name = 'Завтра'
+        case 2:
+            name = 'Послезавтра'
+        case _:
+            name = f'{count}д.'
+    return name

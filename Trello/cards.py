@@ -97,6 +97,16 @@ def get_cards_in_list(idList, key, token):
         raise e
 
 
+def get_cards_on_board(board_id, key, token):
+    params = {
+        "key": key,
+        "token": token,
+    }
+    try:
+        return send_request(method='get', params=params, path=f'/boards/{board_id}/cards').json()
+    except Exception as e:
+        log.error(e)
+        raise e
 
 
 
