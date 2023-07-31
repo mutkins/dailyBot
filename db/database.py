@@ -23,13 +23,15 @@ class Members(Base):
     trello_token = Column(String(250))
     board_id = Column(String(250))
     todolist_id = Column(String(250))
+    donelist_id = Column(String(250))
 
     def __init__(self, chat_id, trello_key, trello_token):
         self.chat_id = chat_id
         self.trello_key = trello_key
         self.trello_token = trello_token
         self.board_id = boards.get_daily_board_id(token=self.trello_token, key=self.trello_key)
-        self.todolist_id = lists.get_todo_list_id(board_id=self.board_id, token=self.trello_token, key=self.trello_key)
+        self.todolist_id = lists.get_list_id_by_name(board_id=self.board_id, token=self.trello_token, key=self.trello_key, name='To Do')
+        self.donelist_id = lists.get_list_id_by_name(board_id=self.board_id, token=self.trello_token, key=self.trello_key, name='Done')
 
     def get_trello_key(self):
         return self.trello_key
@@ -39,6 +41,9 @@ class Members(Base):
 
     def get_todolist_id(self):
         return self.todolist_id
+
+    def get_donelist_id(self):
+        return self.donelist_id
 
     def add_member(self):
         # Create a table. If the table exists - the class is connected to it

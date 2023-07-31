@@ -29,41 +29,10 @@ def get_date_widget(iterator=0):
     ikb.add(*buttons)
     return ikb
 
-#
-#
-# def get_another_one_kb():
-#     kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-#     button = KeyboardButton('/еще_вариант')
-#     kb.add(button)
-#     button = KeyboardButton('/сохранить_рецепт')
-#     kb.add(button)
-#     button = KeyboardButton('/ок')
-#     kb.add(button)
-#     return kb
-#
-#
-# def get_welcome_kb():
-#     kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-#     button = KeyboardButton('/каталог')
-#     kb.add(button)
-#     button = KeyboardButton('/мои_рецепты')
-#     kb.add(button)
-#     return kb
-#
-#
-# def saved_recipes_actions():
-#     kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-#     button = KeyboardButton('/удалить_всё')
-#     kb.add(button)
-#     button = KeyboardButton('/удалить_один')
-#     kb.add(button)
-#     return kb
-#
-#
-# def saved_recipes_list(user_id):
-#     kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-#     saved_recipes = classes.RecipesDB.get_saved_recipes_list_by_user_id(user_id)
-#     for saved_recipe in saved_recipes:
-#         button = KeyboardButton(saved_recipe.recipe_title)
-#         kb.add(button)
-#     return kb
+
+def get_card_actions():
+    ikb = InlineKeyboardMarkup(row_width=2)
+    change_due_butt = InlineKeyboardButton(text='Изменить срок', callback_data='change_due')
+    done_button = InlineKeyboardButton(text='Сделано', callback_data='done')
+    ikb.add(change_due_butt, done_button)
+    return ikb

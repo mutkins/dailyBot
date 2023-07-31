@@ -9,51 +9,43 @@ from Trello import cards
 from common_tools import get_hf_date_diff
 from create_bot import dp
 from handlers.TrelloCardFSM import TrelloCardFSM
-
+from aiogram.types.message_entity import MessageEntity
 # Configure logging
 logging.basicConfig(filename="main.log", level=logging.INFO, filemode="w",
                     format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("main")
 
 
-async def get_all_todo_cards(message: types.Message, state: FSMContext):
+async def send_all_todo_cards(message: types.Message, state: FSMContext):
     # Reset state if it exists (if user is in the process)
     await common.reset_state(state=state)
     user = db.database.get_user_by_chat_id(chat_id=message.from_user.id)
     to_do_cards = cards.get_cards_in_list(idList=user.get_todolist_id(), key=user.get_trello_key(), token=user.get_trello_token())
     for card in to_do_cards:
-        await message.answer(f"<b>{card.get('name')}</b>\n{card.get('desc')}\nСРОК: {get_hf_date_diff(card.get('due'))}", parse_mode="HTML")
+        await send_card(card=card, message=message)
 
 
+async def send_card(card, message: types.Message):
+    title = f"<b>{card.get('name')}</b>\n"
+    desc = f"Описание: {card.get('desc')}\n" if card.get('desc') else ''
+    due = f"Срок: <b>{get_hf_date_diff(card.get('due'))}</b>\n" if card.get('due') else ''
+    id = f"<tg-spoiler>id:{card.get('id')}</tg-spoiler>"
+    await message.answer(f"{title}{desc}{due}{id}", parse_mode="HTML", reply_markup=keyboards.get_card_actions())
 
 
+async def send_card_by_name(name, message: types.Message, state: FSMContext, chat_id):
+    user = db.database.get_user_by_chat_id(chat_id=chat_id)
+    card = cards.get_card_by_name(idList=user.get_todolist_id(), key=user.get_trello_key(), token=user.get_trello_token(),name=name)
+    await send_card(card=card, message=message)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+async def send_card_by_id(message: types.Message, chat_id, card_id):
+    user = db.database.get_user_by_chat_id(chat_id=chat_id)
+    card = cards.get_card_by_id(key=user.get_trello_key(), token=user.get_trello_token(), id=card_id)
+    await send_card(card=card, message=message)
 
 
 def register_handlers(dp: Dispatcher):
 
     # TR1 user sends /cards
-    dp.register_message_handler(get_all_todo_cards, commands=['cards'], state='*')
+    dp.register_message_handler(send_all_todo_cards, commands=['cards'], state='*')

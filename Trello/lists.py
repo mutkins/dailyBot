@@ -7,17 +7,17 @@ logging.basicConfig(filename="main.log", level=logging.INFO, filemode="w",
 log = logging.getLogger("main")
 
 
-def get_todo_list_id(board_id, key, token):
-    list_id = search_todo_list(board_id=board_id, key=key, token=token)
+def get_list_id_by_name(board_id, key, token, name):
+    list_id = search_list(board_id=board_id, key=key, token=token, name=name)
     if not list_id:
         list_id = add_todo_list(board_id, key, token).get('id')
     return list_id
 
 
-def search_todo_list(board_id, key, token):
+def search_list(board_id, key, token, name):
     lists = get_lists_on_board(board_id, key, token)
     for list in lists:
-        if list.get('name') == 'To Do':
+        if list.get('name') == name:
             return list.get('id')
 
 
