@@ -16,7 +16,7 @@ async def check_if_trello_creds_exist(message: types.Message):
 
 async def send_help(message: types.Message):
     await message.answer("<b>Откуда взять токен и ключ трелло?</b>\n"
-                         "1. Зарегистрироваться в Trello https://trello.com/signup"
+                         "1. Зарегистрироваться в Trello https://trello.com/signup\n"
                          "2. В настройках Trello создать Power-Ups, сгенерировать api-key и token "
                          "https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/",
                          parse_mode="HTML")
