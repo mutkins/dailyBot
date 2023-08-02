@@ -9,7 +9,6 @@ import dotenv
 import os
 from db import database
 
-
 # Configure logging
 logging.basicConfig(filename="main.log", level=logging.INFO, filemode="w",
                     format="%(asctime)s %(levelname)s %(message)s")
@@ -19,7 +18,7 @@ log = logging.getLogger("main")
 class TrelloUserFSM(StatesGroup):
     waiting_trello_key = State()
     waiting_trello_token = State()
-
+    waiting_notice_switch = State()
 
 async def ask_trello_key(message: types.Message, state: FSMContext):
     # Reset state if it exists (if user is in the process)
@@ -47,11 +46,37 @@ async def set_trello_token(message: types.Message, state: FSMContext):
 
 async def save_key_and_token(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        newbie = database.Members(chat_id=message.from_user.id, trello_key=data['trello_key'],
-                                  trello_token=data['trello_token'])
+        newbie = database.Users(chat_id=message.from_user.id, trello_key=data['trello_key'],
+                                trello_token=data['trello_token'])
         newbie.add_member()
     await message.answer("Ключ и токен сохранены")
     await common.reset_state(state=state)
+
+
+async def ask_notice_settings(message: types.Message):
+    user = database.get_user_by_chat_id(chat_id=message.from_user.id)
+    await message.answer(notice_set_msg(user=user),
+                         reply_markup=keyboards.get_notifications_switch(status=user.get_notice_state()))
+    await TrelloUserFSM.waiting_notice_switch.set()
+
+
+async def notice_switch(call: types.CallbackQuery):
+    val = True if call.data == 'notification_on' else False
+    database.switch_notice_state(val=val, chat_id=call.from_user.id)
+    user = database.get_user_by_chat_id(chat_id=call.from_user.id)
+    await call.message.edit_text(notice_set_msg(user=user),
+                                 reply_markup=keyboards.get_notifications_switch(status=user.get_notice_state()))
+
+
+async def set_notice_time(call: types.CallbackQuery):
+    database.set_notice_time(n_time=call.data, chat_id=call.from_user.id)
+    user = database.get_user_by_chat_id(chat_id=call.from_user.id)
+    await call.message.edit_text(notice_set_msg(user=user),
+                                 reply_markup=keyboards.get_notifications_switch(status=user.get_notice_state()))
+
+
+def notice_set_msg(user):
+    return f"Текущие настройки уведомлений:\nСтатус:{user.get_notice_state()}\nВремя:{user.get_notice_time()}\n"
 
 
 def register_handlers(dp: Dispatcher):
@@ -61,3 +86,9 @@ def register_handlers(dp: Dispatcher):
     dp.register_message_handler(set_trello_key, state=TrelloUserFSM.waiting_trello_key)
     # U3 user sends card title, save it, then ask token
     dp.register_message_handler(set_trello_token, state=TrelloUserFSM.waiting_trello_token)
+    # U4 User sends /notifications to set notification
+    dp.register_message_handler(ask_notice_settings, commands=['notice'], state='*')
+
+    dp.register_callback_query_handler(notice_switch, text=['notification_off', 'notification_on'],
+                                       state=TrelloUserFSM.waiting_notice_switch)
+    dp.register_callback_query_handler(set_notice_time, state=TrelloUserFSM.waiting_notice_switch)

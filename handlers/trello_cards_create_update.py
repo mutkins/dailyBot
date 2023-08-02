@@ -87,11 +87,8 @@ async def set_card_done(call: types.CallbackQuery, state: FSMContext):
 def register_handlers(dp: Dispatcher):
     dp.register_message_handler(ask_card_title, commands=['add_card'], state='*')
     dp.register_message_handler(set_card_title, state=TrelloCardFSM.waiting_card_title)
-
     dp.register_callback_query_handler(ask_card_due, text='change_due', state='*')
-    dp.register_callback_query_handler(set_card_due, state=TrelloCardFSM.waiting_card_due)
-
     dp.register_callback_query_handler(next_month, text='next', state=TrelloCardFSM.waiting_card_due)
     dp.register_callback_query_handler(previous_month, text='previous', state=TrelloCardFSM.waiting_card_due)
-
+    dp.register_callback_query_handler(set_card_due, state=TrelloCardFSM.waiting_card_due)
     dp.register_callback_query_handler(set_card_done, text='done', state='*')

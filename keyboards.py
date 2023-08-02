@@ -36,3 +36,19 @@ def get_card_actions():
     done_button = InlineKeyboardButton(text='Сделано', callback_data='done')
     ikb.add(change_due_butt, done_button)
     return ikb
+
+
+def get_notifications_switch(status):
+    buttons = []
+    ikb = InlineKeyboardMarkup(row_width=4)
+    if status:
+        button = InlineKeyboardButton(text='Выключить', callback_data='notification_off')
+        ikb.add(button)
+        for i in range(6, 14):
+            button = InlineKeyboardButton(text=f'{i}:00', callback_data=f'{i}:00')
+            buttons.append(button)
+        ikb.add(*buttons)
+    else:
+        button = InlineKeyboardButton(text='Включить', callback_data='notification_on')
+        ikb.add(button)
+    return ikb
