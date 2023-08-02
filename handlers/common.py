@@ -14,6 +14,15 @@ async def check_if_trello_creds_exist(message: types.Message):
                              parse_mode="HTML")
 
 
+async def send_help(message: types.Message):
+    await message.answer("<b>Откуда взять токен и ключ трелло?</b>\n"
+                         "1. Зарегистрироваться в Trello https://trello.com/signup"
+                         "2. В настройках Trello создать Power-Ups, сгенерировать api-key и token "
+                         "https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/",
+                         parse_mode="HTML")
+    await check_if_trello_creds_exist(message=message)
+
+
 async def cancel_handler(message: types.Message, state: FSMContext):
     reset_state(state=state)
     # Cancel state and inform user about it
@@ -29,7 +38,8 @@ async def reset_state(state: FSMContext):
 
 def register_handlers(dp: Dispatcher):
     # A1 user sends /help or smthg like it
-    dp.register_message_handler(send_welcome, commands=['start', 'help', 'хелп'])
+    dp.register_message_handler(send_welcome, commands=['start'])
     dp.register_message_handler(cancel_handler, state='*', commands=['cancel', 'отмена'])
+    dp.register_message_handler(send_help, commands=['help'])
 
 
