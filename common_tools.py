@@ -38,6 +38,7 @@ def get_hf_date_diff(date):
 
 
 def get_days_diff(date1, date2=datetime.now()):
+    log.debug(f'Calculating date dif... datenow={date2}, date2={date1}')
     return (date1.date() - date2.date()).days
 
 
@@ -57,6 +58,7 @@ def get_count_days_name(count):
             name = f'{count*-1}д. назад'
         case _:
             name = f'{count}д.'
+    log.debug(f'count days name = {name}')
     return name
 
 
