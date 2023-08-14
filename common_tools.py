@@ -37,8 +37,9 @@ def get_hf_date_diff(date):
     return get_count_days_name(diff)
 
 
-def get_days_diff(date1, date2=datetime.now()):
-    date2=datetime.now()
+def get_days_diff(date1, date2=None):
+    if not date2:
+        date2 = datetime.now()
     print(f'Calculating date dif... datenow={date2}, date2={date1}')
     log.debug(f'Calculating date dif... datenow={date2}, date2={date1}')
     return (date1.date() - date2.date()).days
